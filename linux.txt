@@ -1,0 +1,49 @@
+1.查询笔记本的网卡型号
+#lspci |grep -i network
+2.查询linux系统的内核版本
+#uname -r
+3.根据自己的无线网卡的型号找到相应的驱动版本，下载并解压到相应的文件夹（/home），进入文件夹，会发现有Makefile文件，在终端下执行命令进行编译
+#make
+如果以前安装过其他网卡，执行make clean命令，在执行make命令
+4.安装
+#make install
+完成操作后会有wl.ko文件，为无线网络驱动模块
+5.卸载linux可能安装的无效驱动，因为无效驱动可能会让你的驱动失效
+#lspmod |grep "brcmsmac\|b43\|ssb\|bcma\|wl"
+如果终端下显示有相应的版本，移除它
+#rmmod b43
+#rmmod ssb
+#rmmod bcma
+#rmmod wl
+#rmmod brcmsmac
+黑名单这些驱动程序，防止他们加载
+# echo "blacklist ssb" >> /etc/modprobe.d/blacklist.conf
+# echo "blacklist bcma" >> /etc/modprobe.d/blacklist.conf
+# echo "blacklist b43" >> /etc/modprobe.d/blacklist.conf
+# echo "blacklist brcmsmac" >> /etc/modprobe.d/blacklist.conf
+
+6.加载驱动（很重要）
+#modprobe lib80211
+or
+#modprobe ieee80211_crypt_tkip
+
+加载驱动块
+#insmod wl.ko
+很可能会出错，如果出现以下信息
+"insmod:error inserting 'wl.ko': -l Unknown symbol in module"
+主要是因为驱动某个模块未加载出来，输入如下命令
+#modprobe lib80211 or ieee80211_crypt_tkip
+#modprobe cfg80211
+#insmod wl.ko
+还可能会出现许多问题，具体情况查询官方文档readme.txt
+7.开机启动无线网卡驱动
+#cp wl.ko /lib/modules/`uname -r`/kernel/drivers/net/wireless
+#depmod -a
+#echo modeprobe wl >> /etc/rc.local
+
+
+
+我的网卡驱动为Broadcom BCM43142.
+具体情况请查询官方文档http://www.broadcom.com/docs/linux_sta/README.txt
+
+
